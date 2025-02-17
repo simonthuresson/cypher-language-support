@@ -2,12 +2,14 @@ import {
   createConnection,
   Diagnostic,
   DidChangeConfigurationNotification,
+  DocumentFormattingParams,
   InitializeResult,
   ProposedFeatures,
   SemanticTokensRegistrationOptions,
   SemanticTokensRegistrationType,
   TextDocuments,
   TextDocumentSyncKind,
+  TextEdit,
 } from 'vscode-languageserver/node';
 
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -55,6 +57,7 @@ connection.onInitialize(() => {
   const result: InitializeResult = {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,
+      documentFormattingProvider: true,
       // Tell the client what features does the server support
       completionProvider: {
         resolveProvider: false,
@@ -101,6 +104,31 @@ documents.onDidChangeContent((change) => lintSingleDocument(change.document));
 // Trigger the syntax colouring
 connection.languages.semanticTokens.on(
   applySyntaxColouringForDocument(documents),
+);
+
+connection.onDocumentFormatting(
+  (params: DocumentFormattingParams): TextEdit[] => {
+    const document = documents.get(params.textDocument.uri);
+    if (!document) {
+      return [];
+    }
+
+    const text = document.getText();
+    const debugString = 'DEBUG STRING INSERTED HERE' + text;
+
+    // Insert the debug string at the beginning of the document
+    return [TextEdit.insert({ line: 0, character: 0 }, debugString + '\n')];
+
+    // Alternatively, if you want to append to the end of the document:
+    /*
+      return [
+          TextEdit.insert(
+              { line: document.lineCount, character: 0 },
+              '\n' + debugString
+          )
+      ];
+      */
+  },
 );
 
 // Trigger the signature help, providing info about functions / procedures
