@@ -1,5 +1,16 @@
 import * as path from 'path';
-import { ExtensionContext, workspace } from 'vscode';
+import {
+  CancellationToken,
+  ExtensionContext,
+  FormattingOptions,
+  Range,
+  Selection,
+  TextDocument,
+  TextEdit,
+  Uri,
+  window,
+  workspace,
+} from 'vscode';
 import {
   LanguageClient,
   LanguageClientOptions,
@@ -37,6 +48,7 @@ export async function activate(context: ExtensionContext) {
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     // Register the server for Cypher text documents
+    middleware: middleware,
     documentSelector: [{ language: 'cypher' }],
     synchronize: {
       // Notify the server about file changes to '.clientrc files contained in the workspace
@@ -57,6 +69,31 @@ export async function activate(context: ExtensionContext) {
   // Command handlers and view registrations
   context.subscriptions.push(...registerDisposables());
 
+  client.onNotification(
+    'custom/setCursorPosition',
+    (params: { uri: string; offset: number }) => {
+      // Use setTimeout to ensure this happens AFTER the document has been formatted
+      setTimeout(() => {
+        const editor = window.activeTextEditor;
+        const documentUri = Uri.parse(params.uri);
+
+        if (
+          editor &&
+          editor.document.uri.toString() === documentUri.toString()
+        ) {
+          // Convert offset to Position object
+          const newPosition = editor.document.positionAt(params.offset);
+
+          // Set cursor position
+          editor.selection = new Selection(newPosition, newPosition);
+
+          // Optional: scroll to make the cursor visible
+          editor.revealRange(new Range(newPosition, newPosition));
+        }
+      }, 100); // Small delay to ensure formatting completes first
+    },
+  );
+
   // Start the client. This will also launch the server
   await client.start();
 
@@ -74,3 +111,37 @@ export async function deactivate(): Promise<void> | undefined {
 
   return client.stop();
 }
+
+const middleware = {
+  provideDocumentFormattingEdits: async (
+    document: TextDocument,
+    options: FormattingOptions,
+    token: CancellationToken,
+    next: (
+      document: TextDocument,
+      options: FormattingOptions,
+      token: CancellationToken,
+    ) => Thenable<TextEdit[]>,
+  ): Promise<TextEdit[]> => {
+    // Get the current cursor position
+    const editor = window.activeTextEditor;
+    let cursorOffset: number | undefined = undefined;
+
+    if (editor && editor.document === document) {
+      // Convert the cursor position to an offset
+      cursorOffset = document.offsetAt(editor.selection.active);
+    }
+
+    // Store the cursor position
+    if (cursorOffset !== undefined) {
+      // Send cursor position to server before formatting
+      await client.sendNotification('custom/cursorPosition', {
+        uri: document.uri.toString(),
+        offset: cursorOffset,
+      });
+    }
+
+    // Call the original formatting provider
+    return next(document, options, token);
+  },
+};

@@ -133,29 +133,63 @@ connection.onNotification(
   },
 );
 
+// Keep track of the last received cursor position
+let lastCursorPosition: { uri: string; offset: number } | null = null;
+
+// Handle the custom notification for cursor position
+connection.onNotification(
+  'custom/cursorPosition',
+  (params: { uri: string; offset: number }) => {
+    lastCursorPosition = params;
+  },
+);
+
+// Standard formatting handler
 connection.onDocumentFormatting(
   (params: DocumentFormattingParams): TextEdit[] => {
     const document = documents.get(params.textDocument.uri);
     if (!document) {
       return [];
     }
-
     const text = document.getText();
-    const formattedText = formatQuery(text);
 
-    if (text === formattedText) {
+    // Use the cursor position if it's for the same document
+    const cursorOffset =
+      lastCursorPosition && lastCursorPosition.uri === params.textDocument.uri
+        ? lastCursorPosition.offset
+        : undefined;
+
+    // Pass the cursor position to your formatting function
+    const { formattedString, newCursorPos } = formatQuery(text, cursorOffset);
+
+    if (text === formattedString) {
       return [];
     }
 
-    return [
+    const textEdits = [
       TextEdit.replace(
         {
           start: { line: 0, character: 0 },
           end: { line: document.lineCount, character: 0 },
         },
-        formattedText,
+        formattedString,
       ),
     ];
+
+    // Send notification with new cursor position
+    if (newCursorPos !== undefined) {
+      connection
+        .sendNotification('custom/setCursorPosition', {
+          uri: params.textDocument.uri,
+          offset: newCursorPos,
+        })
+        .catch(() => {});
+    }
+
+    // Reset the cursor position after using it
+    lastCursorPosition = null;
+
+    return textEdits;
   },
 );
 
