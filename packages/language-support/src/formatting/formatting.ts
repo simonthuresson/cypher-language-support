@@ -1491,6 +1491,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     }
     const wrappingGrp = this.startGroup();
     this._visit(ctx.expression6());
+    this.avoidBreakBetween();
     this.visit(ctx.comparisonExpression6());
     this.endGroup(wrappingGrp);
   };
