@@ -130,23 +130,25 @@ function getNeighbourState(curr: State, choice: Choice, split: Split): State {
 
   for (let i = 0; i < choice.left.groupsStarting.length; i++) {
     const shouldBreak = actualColumn + choice.left.groupsStarting[i].size > 80;
-    /*  if (shouldBreak) {
+    if (choice.left.groupsStarting[i].hasCausedBreaking) {
       nextIndentation += INDENTATION_SPACES;
       finalIndentation += INDENTATION_SPACES;
-    } */
+    }
     nextGroups.push({
       align: actualColumn,
       breakCost: shouldBreak ? 0 : Math.pow(10, nextGroups.length + 1),
-      hasIndented: false,
+      hasIndented: choice.left.groupsStarting[i].hasCausedBreaking,
       shouldBreak,
       id: choice.left.groupsStarting[i].id,
     });
   }
+  let bool = true;
   for (let i = 0; i < choice.left.groupsEnding.length; i++) {
     const group = nextGroups.pop();
-    if (group && group.hasIndented) {
+    if (group && group.hasIndented && bool) {
       nextIndentation -= INDENTATION_SPACES;
       finalIndentation -= INDENTATION_SPACES;
+      bool = false;
     }
   }
 
@@ -253,6 +255,7 @@ function bestFirstSolnSearch(
       // stateString = stateToString(state);
     }
     let forceBreak = false;
+    let forceBreak2 = false;
     const choice = choiceList[state.choiceIndex];
     const tempStates: State[] = [];
     for (const split of choice.possibleSplitChoices) {
@@ -280,16 +283,25 @@ function bestFirstSolnSearch(
         choice.possibleSplitChoices.length > 1
       ) {
         // state.indentation += INDENTATION_SPACES
+        forceBreak2 = true;
         continue;
       }
       tempStates.push(neighbourState);
     }
     if (forceBreak) {
       const s = tempStates[0];
-      if (!s.activeGroups[s.activeGroups.length - 1].hasIndented) {
+      const group = s.activeGroups[s.activeGroups.length - 1];
+      if (!group.hasIndented) {
         s.activeGroups[s.activeGroups.length - 1].hasIndented = true;
         s.indentation += INDENTATION_SPACES;
       }
+      heap.push(s);
+    } else if (forceBreak2) {
+      const s = tempStates[0];
+      const group = choice.right.groupsStarting.find(
+        (group) => group.size + choice.left.text.length > 80,
+      );
+      group.hasCausedBreaking = true;
       heap.push(s);
     } else {
       tempStates.forEach((s) => heap.push(s));

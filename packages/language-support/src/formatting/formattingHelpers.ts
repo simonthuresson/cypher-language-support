@@ -25,6 +25,7 @@ export interface Group {
   size: number;
   debugText?: string;
   nonPrettierBreak: boolean;
+  hasCausedBreaking?: boolean;
 }
 
 export interface BaseChunk {
