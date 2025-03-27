@@ -469,7 +469,7 @@ ORDER BY lm.lkjhgfdswert ASC`;
   a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w`;
     const expected = `
 RETURN DISTINCT
-  a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w`;
+  a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w`.trimStart();
     verifyFormatting(query, expected);
   });
 
