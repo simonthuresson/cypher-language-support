@@ -351,12 +351,17 @@ RETURN p`;
   test('should align arguments of function invocation after opening bracket', () => {
     const query = `RETURN collect(create_this1 { datetime: apoc.date.convertFormat(toString(create_this1.datetime), "OZQvXyoU", "EhpkDy8g") }) AS data`;
     const expected = `
-RETURN collect(create_this1
-               {datetime:
-                apoc.date.convertFormat(toString(create_this1.datetime),
-                                        "OZQvXyoU",
-                                        "EhpkDy8g")})
-       AS data`.trimStart();
+RETURN collect(
+  create_this1
+    {
+      datetime:
+        apoc.date.convertFormat(
+          toString(create_this1.datetime),
+          "OZQvXyoU",
+          "EhpkDy8g"
+        )
+    }
+) AS data`.trimStart();
     verifyFormatting(query, expected);
   });
 
@@ -399,8 +404,9 @@ RETURN DISTINCT p.networkDbId, p.name, platfs`;
   test('no splits within an arrow', () => {
     const query = `MERGE (naame)-[:tyyyyyyyyyype {keeeeeeeey: "dFTkCNlb", keey: "rmmCQGIb"}]->(naaaaame);`;
     const expected = `
-MERGE (naame)-[:tyyyyyyyyyype {keeeeeeeey: "dFTkCNlb", keey: "rmmCQGIb"}]->
-      (naaaaame);`.trimStart();
+MERGE
+  (naame)-[:tyyyyyyyyyype {keeeeeeeey: "dFTkCNlb", keey: "rmmCQGIb"}]->
+  (naaaaame);`.trimStart();
     verifyFormatting(query, expected);
   });
 
@@ -432,10 +438,14 @@ MATCH (dmk:Station {name: 'Denmark Hill'})<-[:CALLS_AT]-(l1a:CallingPoint)-[:NEX
         (l2b)-[:CALLS_AT]->(gtw:Station {name: 'Gatwick Airport'})
 RETURN dmk`;
     const expected = `
-MATCH (dmk:Station {name: 'Denmark Hill'})<-[:CALLS_AT]-
-      (l1a:CallingPoint)-[:NEXT]->+(l1b)-[:CALLS_AT]->(x:Station)<-[:CALLS_AT]-
-      (l2a:CallingPoint)-[:NEXT]->*(l2b)-[:CALLS_AT]->
-      (gtw:Station {name: 'Gatwick Airport'})
+MATCH
+  (dmk:Station {name: 'Denmark Hill'})<-[:CALLS_AT]-
+  (l1a:CallingPoint)-[:NEXT]->+
+  (l1b)-[:CALLS_AT]->
+  (x:Station)<-[:CALLS_AT]-
+  (l2a:CallingPoint)-[:NEXT]->*
+  (l2b)-[:CALLS_AT]->
+  (gtw:Station {name: 'Gatwick Airport'})
 RETURN dmk`.trim();
     verifyFormatting(query, expected);
   });
@@ -488,9 +498,11 @@ RETURN DISTINCT
   (:Station {name: 'Cheltenham Spa'})
 RETURN [stop in n[..-1] | stop.name] AS stops`;
     const expected = `
-MATCH SHORTEST 1
-      (:Station {name: 'Hartlebury'})
-      (()--(n))+(:Station {name: 'Cheltenham Spa'})
+MATCH
+  SHORTEST 1
+  (:Station {name: 'Hartlebury'})
+  (()--(n))+
+  (:Station {name: 'Cheltenham Spa'})
 RETURN [stop IN n[.. -1] | stop.name] AS stops`.trimStart();
     verifyFormatting(query, expected);
   });
@@ -649,11 +661,12 @@ MATCH (a:person {name: 'alice', age: 30})-[r:friend_of]->
       (e:person {name: 'eve'})
 RETURN a`;
     const expected = `
-MATCH (a:person {name: 'alice', age: 30})-[r:friend_of]->
-      (b:person {name: 'bob'})-[s:colleague_of]->
-      (c:person {name: 'carol'})-[t:partner_of]->
-      (d:person {name: 'david'})-[u:mentor_and_friend_of]->
-      (e:person {name: 'eve'})
+MATCH
+  (a:person {name: 'alice', age: 30})-[r:friend_of]->
+  (b:person {name: 'bob'})-[s:colleague_of]->
+  (c:person {name: 'carol'})-[t:partner_of]->
+  (d:person {name: 'david'})-[u:mentor_and_friend_of]->
+  (e:person {name: 'eve'})
 RETURN a`.trimStart();
     verifyFormatting(query, expected);
   });
@@ -665,8 +678,10 @@ MATCH (a:Person {name: 'Alice'})   -[r:KNOWS]->
       (c:Person {name: 'Charlie'})
 RETURN a`;
     const expected = `
-MATCH (a:Person {name: 'Alice'})-[r:KNOWS]->
-      (b:Person {name: 'Bob'})-[s:FRIEND_OF]->(c:Person {name: 'Charlie'})
+MATCH
+  (a:Person {name: 'Alice'})-[r:KNOWS]->
+  (b:Person {name: 'Bob'})-[s:FRIEND_OF]->
+  (c:Person {name: 'Charlie'})
 RETURN a`.trimStart();
     verifyFormatting(query, expected);
   });
