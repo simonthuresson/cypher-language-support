@@ -28,6 +28,7 @@ interface Group {
   breakCost: number;
   shouldBreak: boolean;
   id: number;
+  hasIndented: boolean;
 }
 
 interface Decision {
@@ -129,20 +130,21 @@ function getNeighbourState(curr: State, choice: Choice, split: Split): State {
 
   for (let i = 0; i < choice.left.groupsStarting.length; i++) {
     const shouldBreak = actualColumn + choice.left.groupsStarting[i].size > 80;
-    if (shouldBreak) {
+    /*  if (shouldBreak) {
       nextIndentation += INDENTATION_SPACES;
       finalIndentation += INDENTATION_SPACES;
-    }
+    } */
     nextGroups.push({
       align: actualColumn,
       breakCost: shouldBreak ? 0 : Math.pow(10, nextGroups.length + 1),
+      hasIndented: false,
       shouldBreak,
       id: choice.left.groupsStarting[i].id,
     });
   }
   for (let i = 0; i < choice.left.groupsEnding.length; i++) {
     const group = nextGroups.pop();
-    if (group && group.shouldBreak) {
+    if (group && group.hasIndented) {
       nextIndentation -= INDENTATION_SPACES;
       finalIndentation -= INDENTATION_SPACES;
     }
@@ -250,19 +252,25 @@ function bestFirstSolnSearch(
     if (state.choiceIndex > 0) {
       // stateString = stateToString(state);
     }
+    let forceBreak = false;
     const choice = choiceList[state.choiceIndex];
+    const tempStates: State[] = [];
     for (const split of choice.possibleSplitChoices) {
       const neighbourState = getNeighbourState(state, choice, split);
       if (
+        // To break in a list
         neighbourState.activeGroups.length > 0 &&
         neighbourState.activeGroups.at(-1).shouldBreak &&
         split.splitType !== '\n' &&
         split.splitType !== '\n\n' &&
         choice.possibleSplitChoices.length > 1
       ) {
+        // neighbourState.
+        forceBreak = true;
         continue;
       }
       if (
+        // In order to break first
         state.activeGroups.filter((group) => group.shouldBreak).length === 0 &&
         choice.right.groupsStarting.some(
           (group) => group.size + choice.left.text.length > 80,
@@ -274,7 +282,17 @@ function bestFirstSolnSearch(
         // state.indentation += INDENTATION_SPACES
         continue;
       }
-      heap.push(neighbourState);
+      tempStates.push(neighbourState);
+    }
+    if (forceBreak) {
+      const s = tempStates[0];
+      if (!s.activeGroups[s.activeGroups.length - 1].hasIndented) {
+        s.activeGroups[s.activeGroups.length - 1].hasIndented = true;
+        s.indentation += INDENTATION_SPACES;
+      }
+      heap.push(s);
+    } else {
+      tempStates.forEach((s) => heap.push(s));
     }
   }
   throw new Error(INTERNAL_FORMAT_ERROR_MESSAGE);
