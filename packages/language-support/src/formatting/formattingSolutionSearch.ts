@@ -145,16 +145,18 @@ function getNeighbourState(curr: State, choice: Choice, split: Split): State {
   let bool = true;
   for (let i = 0; i < choice.left.groupsEnding.length; i++) {
     const group = nextGroups.pop();
-    if (group && group.hasIndented && bool) {
+    if (group && group.hasIndented) {
       nextIndentation -= INDENTATION_SPACES;
       if (
         choice.left.text.includes('}') ||
         choice.left.text.includes(']') ||
         choice.left.text.includes(')')
       ) {
-        finalIndentation -= INDENTATION_SPACES;
+        if (bool) {
+          finalIndentation -= INDENTATION_SPACES;
+          bool = false;
+        }
       }
-      bool = false;
     }
   }
 
