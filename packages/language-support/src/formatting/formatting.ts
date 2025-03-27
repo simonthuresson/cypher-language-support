@@ -881,18 +881,13 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       this.avoidBreakBetween();
       this._visit(ctx.DISTINCT());
     }
+    const returnGrp = this.startGroupAlsoOnComment();
+    this._visit(ctx.returnItems());
+    this.endGroup(returnGrp);
     if (ctx.orderBy() || ctx.skip()) {
-      // const returnGrp = this.startGroupAlsoOnComment();
-      this._visit(ctx.returnItems());
-      // this.endGroup(returnGrp);
-      const orderSkipGrp = this.startGroup();
       this.breakLine();
       this._visit(ctx.orderBy());
       this._visit(ctx.skip());
-      this.endGroup(orderSkipGrp);
-    } else {
-      // Only wrap returnItems in a group if necessary to avoid excessive groups
-      this._visit(ctx.returnItems());
     }
     this._visit(ctx.limit());
   };
@@ -918,11 +913,10 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     if (ctx.AS() || ctx.variable()) {
       // const wrappingGrp = this.startGroup();
       this._visit(ctx.expression());
-      const asGrp = this.startGroup();
+      this.avoidBreakBetween();
       this._visit(ctx.AS());
       this.avoidBreakBetween();
       this._visit(ctx.variable());
-      this.endGroup(asGrp);
       // this.endGroup(wrappingGrp);
     } else {
       this._visit(ctx.expression());
@@ -934,10 +928,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       this._visit(ctx.TIMES());
     }
     const n = ctx.returnItem_list().length;
-    let wrappingGrp: number;
-    if (n > 1) {
-      wrappingGrp = this.startGroup();
-    }
+    // const wrappingGrp = this.startGroup();
     let commaIdx = 0;
     if (ctx.TIMES() && n > 0) {
       this._visit(ctx.COMMA(commaIdx));
@@ -950,9 +941,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
         commaIdx++;
       }
     }
-    if (n > 1) {
-      this.endGroup(wrappingGrp);
-    }
+    // this.endGroup(wrappingGrp);
   };
 
   // Handled separately because count star is its own thing
