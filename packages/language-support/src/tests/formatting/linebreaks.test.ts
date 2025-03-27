@@ -468,8 +468,9 @@ RETURN DISTINCT
   test('should break after distinct but not the alphabet', () => {
     const query = `return distinct
   a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w`;
-    const expected = `RETURN DISTINCT
-       a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w`;
+    const expected = `
+RETURN DISTINCT
+  a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w`;
     verifyFormatting(query, expected);
   });
 
@@ -1360,7 +1361,7 @@ RETURN p`;
   });
   test('4', () => {
     const query = `
-CREATE 
+CREATE
   (company:Company {
     name: "mrUJWq6A",
     krs: "Yuu9Wl7d",
@@ -1377,6 +1378,25 @@ CREATE
             (()-->(:RanCommand)-->(:RanCypher))* // One or more chains of RanCommand + RanCypher
 RETURN pth ORDER BY length(pth) DESC
 LIMIT 10000;`;
+    const expected = query.trimStart();
+    verifyFormatting(query, expected);
+  });
+  test('6v', () => {
+    const query = `MATCH path =
+  (m1:loooooooongrelationtypename {code: "mFG66X9v"})-
+  [r:verylongrelationtypename]->
+  (m2:anotherverylongrelationtypename)
+RETURN path`;
+    const expected = query.trimStart();
+    verifyFormatting(query, expected);
+  });
+  test('7', () => {
+    const query = `MATCH (n)
+WHERE (
+  (($param1 IS NOT NULL AND this1.title = $param1) AND this1:WaFQynNy) AND
+    (
+    this1:WaFQynNy OR this1:hyztnnwg OR this1:QpLckJcy
+  ))`;
     const expected = query.trimStart();
     verifyFormatting(query, expected);
   });
