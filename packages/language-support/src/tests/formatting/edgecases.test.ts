@@ -356,7 +356,7 @@ RETURN p.name, p.age, p.occupation,
           CASE
             WHEN p.experienceYears < 5 THEN 'Junior Engineer'
             WHEN p.experienceYears >= 5 AND p.experienceYears < 10
-                 THEN 'Mid-level Engineer'
+              THEN 'Mid-level Engineer'
             ELSE 'Senior Engineer'
           END
         WHEN p.occupation = 'Doctor' THEN
@@ -378,7 +378,8 @@ RETURN p.name, p.age, p.occupation,
         WHEN p.salary >= 75000 AND p.salary < 150000 THEN 'Upper Middle Income'
         ELSE 'High Income'
       END
-  END AS incomeCategory ORDER BY p.age DESC`;
+  END AS incomeCategory
+ORDER BY p.age DESC`;
     verifyFormatting(query, expected);
   });
 

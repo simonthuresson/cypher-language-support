@@ -256,7 +256,7 @@ LIMIT "ZTWWLgIq"`;
       (Kevin:Person {name: "HEZDAAhT"})
 WHERE p.name <> "nnwAPHJg"
 RETURN p.name AS Name, p.born AS BirthYear, m.title AS MovieTitle
-       ORDER BY Name ASC
+ORDER BY Name ASC
 LIMIT "ZTWWLgIq"`;
     verifyFormatting(query, expected);
   });
@@ -438,8 +438,7 @@ RETURN dmk`.trim();
   });
 
   test('should break after DISTINCT that follows RETURN', () => {
-    const query = `MATCH (abcde:wxyz)-[]->(fgh:wxyz)-[]->(ijk:wxyz)-[]->(lm:wxyz)
-WHERE abcde.zxcvbnml = "XyZpQ8Rt"
+    const query = `
 RETURN DISTINCT
 abcde.qwertyuiopa, abcde.zxcvbnmasdfgh, abcde.zxcvbnml, fgh.qwertyuiopa,
 fgh.zxcvbnmasdfgh, fgh.zxcvbnml, ijk.qwertyuiopa, ijk.zxcvbnmasdfgh,
@@ -461,7 +460,7 @@ RETURN DISTINCT
   lm.zxcvbnmasdfgh,
   lm.zxcvbnml,
   lm.lkjhgfdswert
-  ORDER BY lm.lkjhgfdswert ASC`;
+ORDER BY lm.lkjhgfdswert ASC`;
     verifyFormatting(query, expected);
   });
 
@@ -1376,7 +1375,8 @@ CREATE
             (()-->(:RanCommand)-->(:RanCypher))+ // One or more chains of RanCommand + RanCypher
             (()-->(:GeneratedQuery))+ // Optionally successive repeated calls of GeneratedQuery
             (()-->(:RanCommand)-->(:RanCypher))* // One or more chains of RanCommand + RanCypher
-RETURN pth ORDER BY length(pth) DESC
+RETURN pth 
+ORDER BY length(pth) DESC
 LIMIT 10000;`;
     const expected = query.trimStart();
     verifyFormatting(query, expected);
