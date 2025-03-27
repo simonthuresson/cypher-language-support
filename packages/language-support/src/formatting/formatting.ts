@@ -1937,6 +1937,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     const mapProjectionGrp = this.startGroup();
     // this.avoidBreakBetween();
     this._visit(ctx.LCURLY());
+    this.lastInCurrentBuffer().breakingDifferently = true;
     this.avoidSpaceBetween();
     const n = ctx.mapProjectionElement_list().length;
     for (let i = 0; i < n; i++) {
