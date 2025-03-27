@@ -35,7 +35,8 @@ with a, v where trim(v.authors) <> ''
 unwind split(v.authors,',') as name
 merge (author:Author {name:name})
 merge (a)-[:WRITTEN_BY]->(author)`;
-    const expected = `CALL apoc.load.json(url) YIELD value AS v
+    const expected = `CALL apoc.load.json(url)
+YIELD value AS v
 MERGE (a:Article {v.article_number})
   ON CREATE SET a += v {.content_text, .published_date, .title, .url}
 MERGE (s:Source {name: v.source})
@@ -201,7 +202,8 @@ with a, v where trim(v.authors) <> ''
 unwind split(v.authors,',' as name
 merge (author:Author {name:name})
 merge (a)-[:WRITTEN_BY]->(author)`;
-    const expected = `CALL apoc.load.json(url) YIELD value AS v
+    const expected = `CALL apoc.load.json(url)
+YIELD value AS v
 MERGE (a:Article {v.article_number})
   ON CREATE SET a += + v {.content_text.published_date, .title, .url }
 MERGE (s:Source {name: v.source})

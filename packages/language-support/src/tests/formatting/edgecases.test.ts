@@ -383,21 +383,17 @@ ORDER BY p.age DESC`;
     verifyFormatting(query, expected);
   });
 
-  test('does not break CALL YIELD', () => {
-    const query = `CALL dbms.procedures YIELD name, signature, description`;
-    const expected = `CALL dbms.procedures YIELD name, signature, description`;
-    verifyFormatting(query, expected);
-  });
-
   test('handles CALL YIELD with no args gracefully', () => {
     const query = `call dbms.components() yield *`;
-    const expected = `CALL dbms.components() YIELD *`;
+    const expected = `CALL dbms.components()
+YIELD *`;
     verifyFormatting(query, expected);
   });
 
   test('handles CALL YIELD case with one arg gracefully', () => {
     const query = `call dbms.components(1) yield *`;
-    const expected = `CALL dbms.components(1) YIELD *`;
+    const expected = `CALL dbms.components(1)
+YIELD *`;
     verifyFormatting(query, expected);
   });
 

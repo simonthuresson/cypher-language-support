@@ -255,12 +255,15 @@ WHERE p.name <> "nnwAPHJg"
 RETURN p.name AS Name, p.born AS BirthYear, m.title AS MovieTitle
 ORDER BY Name ASC
 LIMIT "ZTWWLgIq"`;
-    const expected = `MATCH (p:Person)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-
-      (Kevin:Person {name: "HEZDAAhT"})
+    const expected = `
+MATCH
+  (p:Person)-[:ACTED_IN]->
+  (m:Movie)<-[:ACTED_IN]-
+  (Kevin:Person {name: "HEZDAAhT"})
 WHERE p.name <> "nnwAPHJg"
 RETURN p.name AS Name, p.born AS BirthYear, m.title AS MovieTitle
 ORDER BY Name ASC
-LIMIT "ZTWWLgIq"`;
+LIMIT "ZTWWLgIq"`.trimStart();
     verifyFormatting(query, expected);
   });
 
@@ -310,21 +313,24 @@ WHERE p.price > 1000 AND p.stock > 50 AND
                     'Musical Instruments', 'Art Supplies', 'Office Supplies']
 RETURN p`;
     const expected = `MATCH (p:Product)
-WHERE p.price > 1000 AND
-      p.stock > 50 AND
-      p.category IN
-      ['Electronics',
-       'Home Appliances',
-       'Garden Tools',
-       'Sports Equipment',
-       'Automotive Parts',
-       'Fashion Accessories',
-       'Books',
-       'Toys',
-       'Jewelry',
-       'Musical Instruments',
-       'Art Supplies',
-       'Office Supplies']
+WHERE
+  p.price > 1000 AND
+  p.stock > 50 AND
+  p.category IN
+    [
+      'Electronics',
+      'Home Appliances',
+      'Garden Tools',
+      'Sports Equipment',
+      'Automotive Parts',
+      'Fashion Accessories',
+      'Books',
+      'Toys',
+      'Jewelry',
+      'Musical Instruments',
+      'Art Supplies',
+      'Office Supplies'
+    ]
 RETURN p`;
     verifyFormatting(query, expected);
   });
@@ -413,9 +419,12 @@ MERGE
   test('function arguments should align', () => {
     const query = `CALL apoc.periodic.iterate("eZQB0P0q", "1p7EFkyE", {batchSize: "v0Ap5F8F", parallel: "UUc75lVg"}) YIELD batches, total, timeTaken, committedOperations, failedOperations`;
     const expected = `
-CALL apoc.periodic.iterate("eZQB0P0q",
-                           "1p7EFkyE",
-                           {batchSize: "v0Ap5F8F", parallel: "UUc75lVg"})
+CALL
+  apoc.periodic.iterate(
+    "eZQB0P0q",
+    "1p7EFkyE",
+    {batchSize: "v0Ap5F8F", parallel: "UUc75lVg"}
+  )
 YIELD batches, total, timeTaken, committedOperations, failedOperations`.trimStart();
     verifyFormatting(query, expected);
   });
