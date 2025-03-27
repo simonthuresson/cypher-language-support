@@ -917,8 +917,8 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
   visitReturnItem = (ctx: ReturnItemContext) => {
     if (ctx.AS() || ctx.variable()) {
       // const wrappingGrp = this.startGroup();
-      const asGrp = this.startGroup();
       this._visit(ctx.expression());
+      const asGrp = this.startGroup();
       this._visit(ctx.AS());
       this.avoidBreakBetween();
       this._visit(ctx.variable());
@@ -1839,16 +1839,16 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     this.endGroup(functionNameGrp);
     this.avoidSpaceBetween();
     this.avoidBreakBetween();
+    const invocationGrp = this.startGroup();
     this._visit(ctx.LPAREN());
     this.lastInCurrentBuffer().breakingDifferently = true;
-    this.avoidBreakBetween();
-    const invocationGrp = this.startGroup();
     if (ctx.DISTINCT() || ctx.ALL()) {
+      this.avoidBreakBetween();
       this.avoidSpaceBetween();
     }
     this._visit(ctx.ALL());
     this._visit(ctx.DISTINCT());
-    const allFunctionArgsGrp = this.startGroup();
+    // const allFunctionArgsGrp = this.startGroup();
     const n = ctx.functionArgument_list().length;
     for (let i = 0; i < n; i++) {
       // Don't put a space between the ( and the first argument
@@ -1864,7 +1864,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     }
     this.avoidSpaceBetween();
     this._visit(ctx.RPAREN());
-    this.endGroup(allFunctionArgsGrp);
+    // this.endGroup(allFunctionArgsGrp);
     this.endGroup(invocationGrp);
   };
 
