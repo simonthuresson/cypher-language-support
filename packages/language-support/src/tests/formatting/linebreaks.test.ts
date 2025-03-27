@@ -1304,3 +1304,80 @@ RETURN m;`.trimStart();
     verifyFormatting(query, expected);
   });
 });
+
+describe('tests for respecting user line breaks in WITH', () => {
+  test('1', () => {
+    const query = `CREATE
+  (qwer_tyuiopa_zxcvbnmasdfg)-[:abcdefgh]->(qwertyu),
+  (qwertyu)-[:HIJKLMN_OP]->(asdfghj_klzxcvbnmop),
+  (asdfghj_klzxcvbnmop)-[:QRSTUVWX]->(qazwsxedc_rfvgt),
+  (mnbvcxzasdfghj_poiuytrewq)-[:YZABCDF]->(qwertyu),
+  (mnbvcxzasdfghj_poiuytrewq)-[:GHIJKLMN]->(zxcvbnmlkjhgfd_asdfjkl),
+  (zxcvbnmlkjhgfd_asdfjkl)-[:OPQRS_TU]->(qwertyu),
+  (qwert_yuiopasdfg)-[:OPQRS_TU]->(qwertyu)`;
+    const expected = query.trimStart();
+    verifyFormatting(query, expected);
+  });
+  test('2', () => {
+    const query = `CREATE CONSTRAINT aaaaaa
+FOR (aaaaaa:aaaaaa)
+REQUIRE (aaaaaa.aaaaaa) IS UNIQUE
+OPTIONS {
+  aaaaaa: "20z9vakp",
+  aaaaaa: {
+    aaaaaa: ["aotV0uiw", "SCxu0Vyn", "ekTx6ngu"],
+    aaaaaa: ["WqAr9IvS", "j5fYJwuN"],
+    aaaaaa: ["HUDXLCRN", "LUfKWGc7"],
+    aaaaaa: ["qbk3JzMe", "Ca4n1Ea9", "I96Uwq16"],
+    aaaaaa: ["zcBcWjoJ", "dz78begI"],
+    aaaaaa: ["MIADLwls", "qkacQgzY", "wYYAgiGo"],
+    aaaaaa: ["Jmw0tXjZ", "ALiXrHno", "QRYTGYFd"],
+    aaaaaa: ["EEJJKZGC", "GGDt2msc"]
+  }
+}`;
+    const expected = query.trimStart();
+    verifyFormatting(query, expected);
+  });
+  test('3', () => {
+    const query = `RETURN [
+  "OCj0AswA",
+  "dFRbj1s3",
+  "oMbdvgm7",
+  "L4Vey8xn",
+  "GNgeDIkA",
+  "pU4RE0lM",
+  "M6XNVJsO",
+  "NcdW0tuB",
+  "Pf6RIuP4",
+  "6tKStKwl",
+  "HfvahDu5",
+  "gJoq3HnU",
+  "g7LjxbGD"
+]
+RETURN p`;
+    const expected = query.trimStart();
+    verifyFormatting(query, expected);
+  });
+  test('4', () => {
+    const query = `
+CREATE 
+  (company:Company {
+    name: "mrUJWq6A",
+    krs: "Yuu9Wl7d",
+    registration_date: date("FrA1uHGX")
+  });`;
+    const expected = query.trimStart();
+    verifyFormatting(query, expected);
+  });
+  test('5', () => {
+    const query = `MATCH pth = (u:User)-[:USER_EVENT]->(e:GeneratedQuery)
+            (()--(:GeneratedQuery))* // Optionally successive
+            (()-->(:RanCommand)-->(:RanCypher))+ // One or more chains of RanCommand + RanCypher
+            (()-->(:GeneratedQuery))+ // Optionally successive repeated calls of GeneratedQuery
+            (()-->(:RanCommand)-->(:RanCypher))* // One or more chains of RanCommand + RanCypher
+RETURN pth ORDER BY length(pth) DESC
+LIMIT 10000;`;
+    const expected = query.trimStart();
+    verifyFormatting(query, expected);
+  });
+});
