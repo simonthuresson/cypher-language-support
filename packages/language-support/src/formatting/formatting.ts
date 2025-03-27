@@ -1573,6 +1573,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
   };
 
   visitRangePostfix = (ctx: RangePostfixContext) => {
+    const postFixGroup = this.startGroup();
     this._visit(ctx.LBRACKET());
     if (ctx._fromExp) {
       this._visit(ctx.expression(0));
@@ -1587,6 +1588,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     }
     this.avoidSpaceBetween();
     this._visit(ctx.RBRACKET());
+    this.endGroup(postFixGroup);
   };
 
   // Handled separately because it contains subclauses (and thus indentation rules)
@@ -1946,27 +1948,32 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
   };
 
   visitListItemsPredicate = (ctx: ListItemsPredicateContext) => {
-    const wholeListItemGrp = this.startGroup();
     this._visitTerminalRaw(ctx.ALL());
     this._visitTerminalRaw(ctx.ANY());
     this._visitTerminalRaw(ctx.NONE());
     this._visitTerminalRaw(ctx.SINGLE());
-    this._visit(ctx.LPAREN());
-    this.concatenate();
+    const wholeListItemGrp = this.startGroup();
+    this.avoidBreakBetween();
     this.avoidSpaceBetween();
-    const listGrp = this.startGroup();
+    this._visit(ctx.LPAREN());
+    // this.concatenate();
+    this.avoidBreakBetween();
+    // const listGrp = this.startGroup();
     this._visit(ctx.variable());
-    const inExprGrp = this.startGroup();
+    // const inExprGrp = this.startGroup();
+    this.avoidBreakBetween();
     this._visit(ctx.IN());
+    this.avoidBreakBetween();
     this._visit(ctx._inExp);
-    this.endGroup(inExprGrp);
+    this.avoidBreakBetween();
+    // this.endGroup(inExprGrp);
     if (ctx.WHERE()) {
       const whereGrp = this.startGroup();
       this._visit(ctx.WHERE());
       this._visit(ctx._whereExp);
       this.endGroup(whereGrp);
     }
-    this.endGroup(listGrp);
+    // this.endGroup(listGrp);
     this.avoidSpaceBetween();
     this._visit(ctx.RPAREN());
     this.endGroup(wholeListItemGrp);
