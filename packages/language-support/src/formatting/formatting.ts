@@ -1828,6 +1828,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     this.avoidSpaceBetween();
     this.avoidBreakBetween();
     this._visit(ctx.LPAREN());
+    this.lastInCurrentBuffer().breakingDifferently = true;
     this.avoidBreakBetween();
     const invocationGrp = this.startGroup();
     if (ctx.DISTINCT() || ctx.ALL()) {
@@ -1894,8 +1895,9 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
   // https://neo4j.com/docs/cypher-manual/current/styleguide/#cypher-styleguide-spacing
   visitMap = (ctx: MapContext) => {
     const mapGrp = this.startGroup();
-    this.avoidBreakBetween();
+    // this.avoidBreakBetween();
     this._visit(ctx.LCURLY());
+    this.lastInCurrentBuffer().breakingDifferently = true;
     this.avoidSpaceBetween();
     //this.avoidBreakBetween();
     const n = ctx.expression_list().length;
@@ -1916,7 +1918,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
   visitMapProjection = (ctx: MapProjectionContext) => {
     this._visit(ctx.variable());
     const mapProjectionGrp = this.startGroup();
-    this.avoidBreakBetween();
+    // this.avoidBreakBetween();
     this._visit(ctx.LCURLY());
     this.avoidSpaceBetween();
     const n = ctx.mapProjectionElement_list().length;
@@ -1960,8 +1962,9 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
 
   visitListLiteral = (ctx: ListLiteralContext) => {
     const listGrp = this.startGroup();
-    this.avoidBreakBetween();
+    // this.avoidBreakBetween();
     this._visit(ctx.LBRACKET());
+    this.lastInCurrentBuffer().breakingDifferently = true;
     const n = ctx.expression_list().length;
     for (let i = 0; i < n; i++) {
       const listElemGrp = this.startGroup();

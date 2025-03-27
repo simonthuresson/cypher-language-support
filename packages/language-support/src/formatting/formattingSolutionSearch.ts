@@ -286,7 +286,8 @@ function bestFirstSolnSearch(
         ) &&
         split.splitType !== '\n' &&
         split.splitType !== '\n\n' &&
-        choice.possibleSplitChoices.length > 1
+        choice.possibleSplitChoices.length > 1 &&
+        !choice.right.breakingDifferently
       ) {
         // state.indentation += INDENTATION_SPACES
         forceBreak2 = true;
@@ -298,6 +299,7 @@ function bestFirstSolnSearch(
       const s = tempStates[0];
       const group = s.activeGroups[s.activeGroups.length - 1];
       if (!group.hasIndented) {
+        // Add indentation first time group breaking
         s.activeGroups[s.activeGroups.length - 1].hasIndented = true;
         s.indentation += INDENTATION_SPACES;
       }
@@ -307,6 +309,8 @@ function bestFirstSolnSearch(
       const group = choice.right.groupsStarting.find(
         (group) => group.size + state.column + choice.left.text.length > 80,
       );
+      // Let group know when inside neighbourState that
+      // It has already decided to break
       group.hasCausedBreaking = true;
       heap.push(s);
     } else {

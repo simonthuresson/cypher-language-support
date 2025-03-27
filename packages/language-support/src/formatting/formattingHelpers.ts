@@ -35,6 +35,7 @@ export interface BaseChunk {
   groupsStarting: Group[];
   groupsEnding: Group[];
   indentation: Indentation;
+  breakingDifferently?: boolean;
 }
 
 // Regular chunk specific properties
