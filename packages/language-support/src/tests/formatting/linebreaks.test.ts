@@ -1361,11 +1361,12 @@ RETURN p`;
   test('4', () => {
     const query = `
 CREATE
-  (company:Company {
-    name: "mrUJWq6A",
-    krs: "Yuu9Wl7d",
-    registration_date: date("FrA1uHGX")
-  });`;
+  (company:Company
+    {
+      name: "msdasdasdadWq6A",
+      krs: "Yuu9asdasdadl7d",
+      registration_date: date("FrA1uHGX")
+    });`;
     const expected = query.trimStart();
     verifyFormatting(query, expected);
   });
