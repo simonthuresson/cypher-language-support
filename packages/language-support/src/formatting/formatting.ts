@@ -1487,13 +1487,15 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     this.preserveExplicitNewlineBefore(ctx);
     this.breakLine();
     this._visit(ctx.WHERE());
+    const whereGroup = this.startGroup();
     this._visit(ctx.expression());
+    this.endGroup(whereGroup);
   };
 
   visitParenthesizedExpression = (ctx: ParenthesizedExpressionContext) => {
     const parenthesizedExprGrp = this.startGroup();
     this._visit(ctx.LPAREN());
-    this.lastInCurrentBuffer().breakingDifferently = true;
+    // this.lastInCurrentBuffer().breakingDifferently = true;
     this._visit(ctx.expression());
     this.avoidSpaceBetween();
     this._visit(ctx.RPAREN());
@@ -1506,7 +1508,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       this.visitChildren(ctx);
       return;
     }
-    const wrappingGrp = this.startGroup();
+    // const wrappingGrp = this.startGroup();
 
     let groupId: number;
     for (let i = 0; i < n; i++) {
@@ -1522,7 +1524,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
         this._visit(child);
       }
     }
-    this.endGroup(wrappingGrp);
+    // this.endGroup(wrappingGrp);
   };
 
   visitExpression = (ctx: ExpressionContext) => {
@@ -1586,11 +1588,10 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
 
   // Handled separately because it contains subclauses (and thus indentation rules)
   visitExistsExpression = (ctx: ExistsExpressionContext) => {
-    this._visit(ctx.EXISTS());
-    this.avoidBreakBetween();
-    this._visit(ctx.LCURLY());
-
     if (ctx.regularQuery()) {
+      this._visit(ctx.EXISTS());
+      this.avoidBreakBetween();
+      this._visit(ctx.LCURLY());
       this.addAlignIndentation();
       this._visit(ctx.regularQuery());
       this.removeAlignIndentation();
@@ -1600,10 +1601,15 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       this._visit(ctx.RCURLY());
       this.groupsToEndOnBreak.push(endOfExistGroup);
     } else {
+      const existGroup = this.startGroup();
+      this._visit(ctx.EXISTS());
+      this.avoidBreakBetween();
+      this._visit(ctx.LCURLY());
       this._visit(ctx.matchMode());
       this._visit(ctx.patternList());
       this._visit(ctx.whereClause());
       this._visit(ctx.RCURLY());
+      this.endGroup(existGroup);
     }
   };
 
