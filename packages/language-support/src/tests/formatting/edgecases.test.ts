@@ -105,7 +105,8 @@ RETURN n`;
 
   test('does not remove empty function call parentheses', () => {
     const query = `CALL apoc.meta.stats() YIELD labels`;
-    const expected = `CALL apoc.meta.stats() YIELD labels`;
+    const expected = `CALL apoc.meta.stats()
+YIELD labels`;
     verifyFormatting(query, expected);
   });
 
