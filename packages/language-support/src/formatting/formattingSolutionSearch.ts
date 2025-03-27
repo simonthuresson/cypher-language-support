@@ -276,7 +276,7 @@ function bestFirstSolnSearch(
         // In order to break first
         state.activeGroups.filter((group) => group.shouldBreak).length === 0 &&
         choice.right.groupsStarting.some(
-          (group) => group.size + choice.left.text.length > 80,
+          (group) => group.size + state.column + choice.left.text.length > 80,
         ) &&
         split.splitType !== '\n' &&
         split.splitType !== '\n\n' &&
@@ -299,7 +299,7 @@ function bestFirstSolnSearch(
     } else if (forceBreak2) {
       const s = tempStates[0];
       const group = choice.right.groupsStarting.find(
-        (group) => group.size + choice.left.text.length > 80,
+        (group) => group.size + state.column + choice.left.text.length > 80,
       );
       group.hasCausedBreaking = true;
       heap.push(s);
