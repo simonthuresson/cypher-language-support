@@ -128,9 +128,7 @@ function getNeighbourState(curr: State, choice: Choice, split: Split): State {
   const overflowingCount = Math.max(0, endWithoutCommentAndSplit - MAX_COL);
 
   for (let i = 0; i < choice.left.groupsStarting.length; i++) {
-    const shouldBreak =
-      actualColumn + choice.left.groupsStarting[i].size > 80 &&
-      !choice.left.groupsStarting[i].nonPrettierBreak;
+    const shouldBreak = actualColumn + choice.left.groupsStarting[i].size > 80;
     if (shouldBreak) {
       nextIndentation += INDENTATION_SPACES;
       finalIndentation += INDENTATION_SPACES;
@@ -265,7 +263,7 @@ function bestFirstSolnSearch(
         continue;
       }
       if (
-        state.activeGroups.length === 0 &&
+        state.activeGroups.filter((group) => group.shouldBreak).length === 0 &&
         choice.right.groupsStarting.some(
           (group) => group.size + choice.left.text.length > 80,
         ) &&
