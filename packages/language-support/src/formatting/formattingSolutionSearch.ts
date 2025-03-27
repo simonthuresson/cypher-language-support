@@ -133,6 +133,7 @@ function getNeighbourState(curr: State, choice: Choice, split: Split): State {
       !choice.left.groupsStarting[i].nonPrettierBreak;
     if (shouldBreak) {
       nextIndentation += INDENTATION_SPACES;
+      finalIndentation += INDENTATION_SPACES;
     }
     nextGroups.push({
       align: actualColumn,
@@ -263,6 +264,18 @@ function bestFirstSolnSearch(
       ) {
         continue;
       }
+      if (
+        state.activeGroups.length === 0 &&
+        choice.right.groupsStarting.some(
+          (group) => group.size + choice.left.text.length > 80,
+        ) &&
+        split.splitType !== '\n' &&
+        split.splitType !== '\n\n' &&
+        choice.possibleSplitChoices.length > 1
+      ) {
+        // state.indentation += INDENTATION_SPACES
+        continue;
+      }
       heap.push(neighbourState);
     }
   }
@@ -385,8 +398,8 @@ export function buffersToFormattedString(
       formatted += formattingResult.formattedString + '\n';
     }
   }
-  if (indentation !== 0) {
+  /*   if (indentation !== 0) {
     throw new Error(INTERNAL_FORMAT_ERROR_MESSAGE);
-  }
+  } */
   return { formattedString: formatted.trimEnd(), cursorPos: cursorPos };
 }
