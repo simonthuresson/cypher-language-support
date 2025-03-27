@@ -255,19 +255,11 @@ function bestFirstSolnSearch(
     for (const split of choice.possibleSplitChoices) {
       const neighbourState = getNeighbourState(state, choice, split);
       if (
-        (neighbourState.activeGroups.length > state.activeGroups.length &&
-          neighbourState.activeGroups.some(
-            (group) =>
-              group.shouldBreak &&
-              split.splitType !== '\n' &&
-              split.splitType !== '\n\n' &&
-              choice.possibleSplitChoices.length > 1,
-          )) ||
-        (neighbourState.activeGroups.length > 0 &&
-          neighbourState.activeGroups.at(-1).shouldBreak &&
-          split.splitType !== '\n' &&
-          split.splitType !== '\n\n' &&
-          choice.possibleSplitChoices.length > 1)
+        neighbourState.activeGroups.length > 0 &&
+        neighbourState.activeGroups.at(-1).shouldBreak &&
+        split.splitType !== '\n' &&
+        split.splitType !== '\n\n' &&
+        choice.possibleSplitChoices.length > 1
       ) {
         continue;
       }
@@ -359,7 +351,7 @@ export function buffersToFormattedString(
   let formatted = '';
   let indentation: Indentation = 0;
   let cursorPos = 0;
-  for (const chunkList of buffers) {
+  /*   for (const chunkList of buffers) {
     let prev: Chunk | null = null;
     for (const chunk of chunkList) {
       if (prev && chunk.groupsStarting.length > 0) {
@@ -368,7 +360,7 @@ export function buffersToFormattedString(
       }
       prev = chunk;
     }
-  }
+  } */
 
   for (const chunkList of buffers) {
     const choices: Choice[] = chunkListToChoices(chunkList);
