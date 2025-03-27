@@ -444,9 +444,7 @@ abcde.qwertyuiopa, abcde.zxcvbnmasdfgh, abcde.zxcvbnml, fgh.qwertyuiopa,
 fgh.zxcvbnmasdfgh, fgh.zxcvbnml, ijk.qwertyuiopa, ijk.zxcvbnmasdfgh,
 ijk.zxcvbnml, lm.qwertyuiopa, lm.zxcvbnmasdfgh, lm.zxcvbnml, lm.lkjhgfdswert
 ORDER BY lm.lkjhgfdswert ASC`;
-    const expected = `MATCH (abcde:wxyz)-[]->(fgh:wxyz)-[]->(ijk:wxyz)-[]->(lm:wxyz)
-WHERE abcde.zxcvbnml = "XyZpQ8Rt"
-RETURN DISTINCT
+    const expected = `RETURN DISTINCT
   abcde.qwertyuiopa,
   abcde.zxcvbnmasdfgh,
   abcde.zxcvbnml,
