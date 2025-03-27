@@ -916,13 +916,14 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
 
   visitReturnItem = (ctx: ReturnItemContext) => {
     if (ctx.AS() || ctx.variable()) {
-      const wrappingGrp = this.startGroup();
-      this._visit(ctx.expression());
+      // const wrappingGrp = this.startGroup();
       const asGrp = this.startGroup();
+      this._visit(ctx.expression());
       this._visit(ctx.AS());
+      this.avoidBreakBetween();
       this._visit(ctx.variable());
       this.endGroup(asGrp);
-      this.endGroup(wrappingGrp);
+      // this.endGroup(wrappingGrp);
     } else {
       this._visit(ctx.expression());
     }
@@ -1546,7 +1547,9 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     }
     this._visit(ctx.expression6());
     this.avoidBreakBetween();
+    const comparisonGroup = this.startGroup();
     this.visit(ctx.comparisonExpression6());
+    this.endGroup(comparisonGroup);
   };
 
   visitExpression6 = (ctx: Expression6Context) => {
