@@ -188,8 +188,11 @@ MERGE
     const query = `MATCH (n)
   WHERE ((($param1 IS NOT NULL AND this1.title = $param1) AND this1:WaFQynNy) AND (this1:WaFQynNy OR this1:hyztnnwg OR this1:QpLckJcy))`;
     const expected = `MATCH (n)
-WHERE ((($param1 IS NOT NULL AND this1.title = $param1) AND this1:WaFQynNy) AND
-       (this1:WaFQynNy OR this1:hyztnnwg OR this1:QpLckJcy))`;
+WHERE
+  (
+    (($param1 IS NOT NULL AND this1.title = $param1) AND this1:WaFQynNy) AND
+    (this1:WaFQynNy OR this1:hyztnnwg OR this1:QpLckJcy)
+  )`;
     verifyFormatting(query, expected);
   });
 
@@ -680,8 +683,14 @@ MATCH (NOD01)-[REL01]->
 RETURN NOD01`;
     // The node (N) would fit on the previous line but we prefer to split before nodes
     const expected = `
-MATCH (NOD01)-[REL01]->(NOD02)-[REL02]->(NOD03)-[REL03]->(NOD04)-[REL04]->
-      (N)-[REL05]->(NOD06)-[REL06]->(NOD07)
+MATCH
+  (NOD01)-[REL01]->
+  (NOD02)-[REL02]->
+  (NOD03)-[REL03]->
+  (NOD04)-[REL04]->
+  (N)-[REL05]->
+  (NOD06)-[REL06]->
+  (NOD07)
 RETURN NOD01`.trimStart();
     verifyFormatting(query, expected);
   });
@@ -694,9 +703,11 @@ MATCH (Alice123:Person)-[FRND_REL:friendship]->
       (Dave:Short)
 RETURN Alice123`;
     const expected = `
-MATCH (Alice123:Person)-[FRND_REL:friendship]->
-      (Bob:Indiv)-[COWORK_REL:colleagueRelationship]->
-      (Carla55:EmployeeType)-[PARTNR:partner_of]->(Dave:Short)
+MATCH
+  (Alice123:Person)-[FRND_REL:friendship]->
+  (Bob:Indiv)-[COWORK_REL:colleagueRelationship]->
+  (Carla55:EmployeeType)-[PARTNR:partner_of]->
+  (Dave:Short)
 RETURN Alice123`.trimStart();
     verifyFormatting(query, expected);
   });
