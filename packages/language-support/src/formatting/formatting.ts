@@ -1226,7 +1226,9 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     this._visit(ctx.LPAREN());
     this.lastInCurrentBuffer().breakingDifferently = true;
     // this.avoidBreakBetween();
+    // const patternGrp = this.startGroup();
     this._visit(ctx.pattern());
+    // this.endGroup(patternGrp);
     if (ctx.WHERE()) {
       const whereGrp = this.startGroup();
       this._visit(ctx.WHERE());
@@ -1332,7 +1334,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
   visitPatternElement = (ctx: PatternElementContext) => {
     const n = ctx.getChildCount();
     let i = 0;
-
+    // const patternGroup = this.startGroup();
     while (i < n) {
       const child = ctx.getChild(i);
 
@@ -1350,6 +1352,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
         i++;
       }
     }
+    // this.endGroup(patternGroup);
   };
 
   // Very convoluted logic related to visitPatternElement, used becase we want to be able
