@@ -1221,9 +1221,10 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
   };
 
   visitParenthesizedPath = (ctx: ParenthesizedPathContext) => {
-    this._visit(ctx.LPAREN());
-    this.avoidBreakBetween();
     const parenthesizedPathGrp = this.startGroup();
+    this._visit(ctx.LPAREN());
+    this.lastInCurrentBuffer().breakingDifferently = true;
+    // this.avoidBreakBetween();
     this._visit(ctx.pattern());
     if (ctx.WHERE()) {
       const whereGrp = this.startGroup();
@@ -1231,10 +1232,11 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       this._visit(ctx.expression());
       this.endGroup(whereGrp);
     }
-    this.endGroup(parenthesizedPathGrp);
+    this.avoidSpaceBetween();
     this._visit(ctx.RPAREN());
-    this.concatenate();
+    // this.concatenate();
     this._visit(ctx.quantifier());
+    this.endGroup(parenthesizedPathGrp);
   };
 
   visitArrowLine = (ctx: ArrowLineContext) => {
@@ -1489,12 +1491,13 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
   };
 
   visitParenthesizedExpression = (ctx: ParenthesizedExpressionContext) => {
-    this._visit(ctx.LPAREN());
     const parenthesizedExprGrp = this.startGroup();
+    this._visit(ctx.LPAREN());
+    this.lastInCurrentBuffer().breakingDifferently = true;
     this._visit(ctx.expression());
-    this.endGroup(parenthesizedExprGrp);
     this.avoidSpaceBetween();
     this._visit(ctx.RPAREN());
+    this.endGroup(parenthesizedExprGrp);
   };
 
   visitBinaryExpression = (ctx: ParserRuleContext) => {
