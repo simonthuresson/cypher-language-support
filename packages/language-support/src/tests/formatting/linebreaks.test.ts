@@ -416,8 +416,8 @@ YIELD batches, total, timeTaken, committedOperations, failedOperations`.trimStar
 WHERE (p.priiiiiiiiiiiiiiiiiiice + o.siiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiize)
 RETURN p;`;
     const expected = `MATCH (p:Product)--(o:Order)
-WHERE (p.priiiiiiiiiiiiiiiiiiice +
-       o.siiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiize)
+WHERE
+  (p.priiiiiiiiiiiiiiiiiiice + o.siiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiize)
 RETURN p;`;
     verifyFormatting(query, expected);
   });
@@ -498,10 +498,14 @@ RETURN [stop IN n[.. -1] | stop.name] AS stops`.trimStart();
                  stop IN n[.. -1] WHERE stop.name = 'Bromsgrove'))
 RETURN [stop IN n[.. -1] | stop.name] AS stops`;
     const expected = `
-MATCH SHORTEST 1
-      ((:Station {name: 'Hartlebury'})
-       (()--(n:Station))+(:Station {name: 'Cheltenham Spa'})
-       WHERE none(stop IN n[.. -1] WHERE stop.name = 'Bromsgrove'))
+MATCH
+  SHORTEST 1
+  (
+    (:Station {name: 'Hartlebury'})
+    (()--(n:Station))+
+    (:Station {name: 'Cheltenham Spa'})
+    WHERE none(stop IN n[.. -1] WHERE stop.name = 'Bromsgrove')
+  )
 RETURN [stop IN n[.. -1] | stop.name] AS stops`.trimStart();
     verifyFormatting(query, expected);
   });
@@ -529,10 +533,14 @@ RETURN [stop IN n[.. -1] | stop.name] AS stops`.trimStart();
            none(stop IN n[.. -1] WHERE stop.name = 'Bromsgrove'))
 RETURN [stop IN n[.. -1] | stop.name] AS stops`;
     const expected = `
-MATCH p = SHORTEST 1
-          ((:Station {name: 'Thisisanabsurdlylongnametomakeitawkward'})
-           (()--(n:Station))+(:Station {name: 'Cheltenham Spa'})
-           WHERE none(stop IN n[.. -1] WHERE stop.name = 'Bromsgrove'))
+MATCH p =
+  SHORTEST 1
+  (
+    (:Station {name: 'Thisisanabsurdlylongnametomakeitawkward'})
+    (()--(n:Station))+
+    (:Station {name: 'Cheltenham Spa'})
+    WHERE none(stop IN n[.. -1] WHERE stop.name = 'Bromsgrove')
+  )
 RETURN [stop IN n[.. -1] | stop.name] AS stops`.trimStart();
     verifyFormatting(query, expected);
   });
@@ -542,9 +550,10 @@ RETURN [stop IN n[.. -1] | stop.name] AS stops`.trimStart();
   (:Station {name: 'Pershore'})-[l:LINK WHERE l.distance < 10]-+(b:Station {name: 'Bromsgrove'})
 RETURN [r IN relationships(path) | r.distance] AS distances`;
     const expected = `
-MATCH path = ANY
-             (:Station {name: 'Pershore'})-[l:LINK WHERE l.distance < 10]-+
-             (b:Station {name: 'Bromsgrove'})
+MATCH path =
+  ANY
+  (:Station {name: 'Pershore'})-[l:LINK WHERE l.distance < 10]-+
+  (b:Station {name: 'Bromsgrove'})
 RETURN [r IN relationships(path) | r.distance] AS distances`.trimStart();
     verifyFormatting(query, expected);
   });
@@ -781,9 +790,10 @@ OPTIONAL MATCH (insertBefore:Item)
 WHERE insertBefore.name = $insertBefore
 
 WITH move, insertBefore
-WHERE (insertBefore IS NULL OR move <> insertBefore) AND
-      (NOT EXISTS { (move)-[:NEXT]->(insertBefore) }) AND
-      (insertBefore IS NOT NULL OR EXISTS { (move)-[:NEXT]->() })
+WHERE
+  (insertBefore IS NULL OR move <> insertBefore) AND
+  (NOT EXISTS { (move)-[:NEXT]->(insertBefore) }) AND
+  (insertBefore IS NOT NULL OR EXISTS { (move)-[:NEXT]->() })
 
 OPTIONAL MATCH (beforeMove:Item)-[relBeforeMove:NEXT]->(move)
 OPTIONAL MATCH (move)-[relAfterMove:NEXT]->(afterMove:Item)
@@ -886,9 +896,10 @@ WHERE insertBefore.name = $insertBefore
 
 // If we ask to have it placed at the same position, don't do anything
 WITH move, insertBefore
-WHERE (insertBefore IS NULL OR move <> insertBefore) AND
-      (NOT EXISTS { (move)-[:NEXT]->(insertBefore) }) AND
-      (insertBefore IS NOT NULL OR EXISTS { (move)-[:NEXT]->() })
+WHERE
+  (insertBefore IS NULL OR move <> insertBefore) AND
+  (NOT EXISTS { (move)-[:NEXT]->(insertBefore) }) AND
+  (insertBefore IS NOT NULL OR EXISTS { (move)-[:NEXT]->() })
 
 // Find the items before and after the item to move (if they exist)
 OPTIONAL MATCH (beforeMove:Item)-[relBeforeMove:NEXT]->(move)
@@ -1391,11 +1402,20 @@ RETURN path`;
   });
   test('7', () => {
     const query = `MATCH (n)
-WHERE (
-  (($param1 IS NOT NULL AND this1.title = $param1) AND this1:WaFQynNy) AND
-    (
-    this1:WaFQynNy OR this1:hyztnnwg OR this1:QpLckJcy
-  ))`;
+WHERE
+  (
+    (($param1 IS NOT NULL AND this1.title = $param1) AND this1:WaFQynNy) AND
+    (this1:WaFQynNy OR this1:hyztnnwg OR this1:QpLckJcy)
+  )`;
+    const expected = query.trimStart();
+    verifyFormatting(query, expected);
+  });
+  test('8', () => {
+    const query = `WITH move, insertBefore
+WHERE
+  (insertBefore IS NULL OR move <> insertBefore) AND
+  (NOT EXISTS { (move)-[:NEXT]->(insertBefore) }) AND
+  (insertBefore IS NOT NULL OR EXISTS { (move)-[:NEXT]->() })`;
     const expected = query.trimStart();
     verifyFormatting(query, expected);
   });
