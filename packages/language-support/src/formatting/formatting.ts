@@ -164,6 +164,19 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       let activeGroups: Group[] = [];
       for (let i = 0; i < chunkList.length; i++) {
         const chunk = chunkList[i];
+        if (activeGroups.length > 0 && chunk.type === 'COMMENT') {
+          activeGroups[0].size += 800;
+        }
+        if (
+          chunk.type === 'REGULAR' &&
+          chunkList[i + 1]?.type === 'REGULAR' &&
+          chunk.comment &&
+          !chunk.comment.includes('/*')
+        ) {
+          for (const group of activeGroups) {
+            group.size += 800;
+          }
+        }
         for (const group of chunk.groupsStarting) {
           activeGroups.push(group);
         }
@@ -243,6 +256,10 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
     if (suffix.isCursor) {
       this.cursorPos += prefix.text.length;
     }
+    let comment = '';
+    if (prefix.type === 'REGULAR' && suffix.type === 'REGULAR') {
+      comment = prefix.comment + suffix.comment;
+    }
     const chunk: RegularChunk = {
       type: 'REGULAR',
       text: prefix.text + suffix.text,
@@ -250,6 +267,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       groupsStarting: prefix.groupsStarting.concat(suffix.groupsStarting),
       groupsEnding: prefix.groupsEnding.concat(suffix.groupsEnding),
       indentation: 0,
+      comment: comment,
       ...(hasCursor && { isCursor: true }),
     };
     this.currentBuffer()[indices[1]] = chunk;
@@ -538,10 +556,19 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       // If we have a "hard-break" comment, i.e. one that has a newline before it,
       // we end all currently active groups. Otherwise, that comment becomes part of the group,
       // which makes it very hard for the search to find a good solution.
-      if (nodeLine !== commentLine) {
+      /* if (nodeLine !== commentLine) {
         this.endAllExceptBaseGroup();
+      } */
+
+      if (nodeLine !== commentLine) {
+        this.currentBuffer().push(chunk);
+      } else {
+        const lastChunk = this.lastInCurrentBuffer();
+
+        if (lastChunk.type === 'REGULAR') {
+          lastChunk.comment += text;
+        }
       }
-      this.currentBuffer().push(chunk);
     }
     // Account for the last comment having multiple newline after it, to remember explicit
     // newlines when we have e.g. [C, \n, \n]
@@ -1071,6 +1098,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       groupsStarting: this.startGroupCounter,
       groupsEnding: [],
       indentation: 0,
+      comment: '',
     };
     for (const group of chunk.groupsStarting) {
       group.start = this.currentBuffer().length;
@@ -1119,6 +1147,7 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       groupsStarting: this.startGroupCounter,
       groupsEnding: [],
       indentation: 0,
+      comment: '',
     };
     for (const group of chunk.groupsStarting) {
       group.start = this.currentBuffer().length;

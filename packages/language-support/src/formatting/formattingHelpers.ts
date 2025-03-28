@@ -45,6 +45,7 @@ export interface RegularChunk extends BaseChunk {
   noSpace?: boolean;
   noBreak?: boolean;
   mustBreak?: boolean;
+  comment: string;
 }
 
 export interface SyntaxErrorChunk extends BaseChunk {
@@ -66,6 +67,7 @@ export const emptyChunk: RegularChunk = {
   groupsStarting: [],
   groupsEnding: [],
   indentation: 0,
+  comment: '',
 };
 
 const traillingCharacters = [

@@ -345,6 +345,13 @@ function decisionsToFormatted(decisions: Decision[]): FinalResult {
     }
     if (showGroups) addGroupStart(buffer, decision);
     buffer.push(decision.left.text);
+    if (decision.left.type === 'REGULAR' && decision.left.comment) {
+      buffer.push(' ');
+      buffer.push(decision.left.comment);
+      if (decision.chosenSplit.splitType !== '\n') {
+        buffer.push(' ');
+      }
+    }
     if (showGroups) addGroupEnd(buffer, decision);
     buffer.push(decision.chosenSplit.splitType);
   });
@@ -438,8 +445,8 @@ export function buffersToFormattedString(
       formatted += formattingResult.formattedString + '\n';
     }
   }
-  /*   if (indentation !== 0) {
+  if (indentation !== 0) {
     throw new Error(INTERNAL_FORMAT_ERROR_MESSAGE);
-  } */
+  }
   return { formattedString: formatted.trimEnd(), cursorPos: cursorPos };
 }
