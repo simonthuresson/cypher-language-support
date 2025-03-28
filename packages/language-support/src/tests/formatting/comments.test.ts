@@ -56,8 +56,7 @@ RETURN a.prop /* Return the property of 'a' */
 `;
     const expected = `MERGE (n) /* Ensuring the node exists */
   ON CREATE SET n.prop = 0 /* Set default property */
-MERGE (a:A)- /* Create or match 'a:A' */
-      [:T]->(b:B) /* Link 'a' to 'b' */
+MERGE (a:A)- /* Create or match 'a:A' */ [:T]->(b:B) /* Link 'a' to 'b' */
 RETURN a.prop /* Return the property of 'a' */`;
     verifyFormatting(inlinemultiline, expected);
   });
@@ -105,7 +104,7 @@ ON MATCH SET b.name='you' /* Update name if matched */
 RETURN a.prop// Output the result`;
     const expected = `MERGE (n) // Ensure node exists
   ON CREATE SET n.prop = 0 /* Default value */
-/* Match or create a relationship
+  /* Match or create a relationship
    and update properties as needed */
 MERGE (a:A)-[:T]->(b:B)
   ON CREATE SET a.name = 'me' // Name set during creation
@@ -122,11 +121,12 @@ RETURN 1,
        // Second comment
        3`;
     const expected = `
-RETURN 1,
-       // Comment
-       2,
-       // Second comment
-       3`.trim();
+RETURN
+  1,
+  // Comment
+  2,
+  // Second comment
+  3`.trim();
     verifyFormatting(query, expected);
   });
 
@@ -221,9 +221,10 @@ with "Nc3yUa7F" as vessel_type_code /*This is a comment in an inconvenient place
 UNWIND range("P4zZV7Fe", size(detail_seq)-"7MZn3aLx") AS idx
 return *;`;
     const expected = `
-WITH "Nc3yUa7F" AS vessel_type_code, /*This is a comment in an inconvenient place */
-     // detail
-     ["AbQk1wMr", "PmA6udnt"] AS detail_seq
+WITH
+  "Nc3yUa7F" AS vessel_type_code, /*This is a comment in an inconvenient place */
+  // detail
+  ["AbQk1wMr", "PmA6udnt"] AS detail_seq
 UNWIND range("P4zZV7Fe", size(detail_seq) - "7MZn3aLx") AS idx
 RETURN *;`.trim();
     verifyFormatting(bad, expected);
@@ -234,8 +235,9 @@ RETURN *;`.trim();
 RETURN n.salary + // Add bonus value
        1000 AS totalCompensation;`;
     const expected = `MATCH (n)
-RETURN n.salary + // Add bonus value
-       1000 AS totalCompensation;`;
+RETURN
+  n.salary + // Add bonus value
+  1000 AS totalCompensation;`;
     verifyFormatting(query, expected);
   });
 
@@ -260,8 +262,13 @@ WHERE n.prop > 100000 AND function(1241241, 1241241, // Why is there a comment h
 "asdfklsjdf")
 RETURN n`;
     const expected = `MATCH (n)
-WHERE n.prop > 100000 AND function(1241241, 1241241, // Why is there a comment here?
-                                   "asdfklsjdf")
+WHERE
+  n.prop > 100000 AND
+  function(
+    1241241,
+    1241241, // Why is there a comment here?
+    "asdfklsjdf"
+  )
 RETURN n`;
     verifyFormatting(query, expected);
   });
@@ -273,9 +280,14 @@ WHERE n.prop > 100000 AND function(1241241, 1241241, // Why is there a comment h
 "asdfklsjdf")
 RETURN n`;
     const expected = `MATCH (n)
-WHERE n.prop > 100000 AND function(1241241, 1241241, // Why is there a comment here?
-      // This is a hard break comment
-      "asdfklsjdf")
+WHERE
+  n.prop > 100000 AND
+  function(
+    1241241,
+    1241241, // Why is there a comment here?
+    // This is a hard break comment
+    "asdfklsjdf"
+  )
 RETURN n`;
     verifyFormatting(query, expected);
   });
@@ -286,8 +298,7 @@ MATCH (a:Node) // first match
 WITH a, /* intermediate comment */ a.property AS prop
 RETURN prop; // final return`;
     const expected = `MATCH (a:Node) // first match
-WITH a, /* intermediate comment */
-     a.property AS prop
+WITH a, /* intermediate comment */ a.property AS prop
 RETURN prop; // final return`;
     verifyFormatting(query, expected);
   });
@@ -444,9 +455,10 @@ s.format
     const expected = `MATCH (s:Item)-[r:\`REFERENCED_BY\`]->(t:Item)
 WHERE s.format = "LVDcQiqo" AND t.format = "h5dIgvA4"
 //SET r.flowType = 'BOOLEAN=>NUMBER'
-RETURN s.format,
-       //, s.formatMetadata
-       t.format;
+RETURN
+  s.format,
+  //, s.formatMetadata
+  t.format;
 //, t.formatMetadata;`;
     verifyFormatting(query, expected);
   });
