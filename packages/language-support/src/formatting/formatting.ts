@@ -167,9 +167,16 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
         if (activeGroups.length > 0 && chunk.type === 'COMMENT') {
           activeGroups[0].size += 800;
         }
+        let remainsRegular = false;
+        for (let j = i + 1; j < chunkList.length; j++) {
+          if (chunkList[j].type === 'REGULAR') {
+            remainsRegular = true;
+            break;
+          }
+        }
         if (
           chunk.type === 'REGULAR' &&
-          chunkList[i + 1]?.type === 'REGULAR' &&
+          remainsRegular &&
           chunk.comment &&
           !chunk.comment.includes('/*')
         ) {
