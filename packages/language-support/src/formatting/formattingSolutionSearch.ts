@@ -348,7 +348,7 @@ function decisionsToFormatted(decisions: Decision[]): FinalResult {
     if (decision.left.type === 'REGULAR' && decision.left.comment) {
       buffer.push(' ');
       buffer.push(decision.left.comment);
-      if (decision.chosenSplit.splitType !== '\n') {
+      if (decision.chosenSplit.splitType === '') {
         buffer.push(' ');
       }
     }
