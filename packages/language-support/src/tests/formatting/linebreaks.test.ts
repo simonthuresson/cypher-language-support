@@ -161,7 +161,7 @@ RETURN path`;
     const expected = `
 MATCH path =
   (m1:loooooooongrelationtypename {code: "mFG66X9v"})-
-  [r:verylongrelationtypename]->
+    [r:verylongrelationtypename]->
   (m2:anotherverylongrelationtypename)
 RETURN path`.trimStart();
     verifyFormatting(q21, expected);
@@ -1416,12 +1416,15 @@ CREATE
     verifyFormatting(query, expected);
   });
   test('5', () => {
-    const query = `MATCH pth = (u:User)-[:USER_EVENT]->(e:GeneratedQuery)
-            (()--(:GeneratedQuery))* // Optionally successive
-            (()-->(:RanCommand)-->(:RanCypher))+ // One or more chains of RanCommand + RanCypher
-            (()-->(:GeneratedQuery))+ // Optionally successive repeated calls of GeneratedQuery
-            (()-->(:RanCommand)-->(:RanCypher))* // One or more chains of RanCommand + RanCypher
-RETURN pth 
+    const query = `
+MATCH pth =
+  (u:User)-[:USER_EVENT]->
+  (e:GeneratedQuery)
+  (()--(:GeneratedQuery))* // Optionally successive
+  (()-->(:RanCommand)-->(:RanCypher))+ // One or more chains of RanCommand + RanCypher
+  (()-->(:GeneratedQuery))+ // Optionally successive repeated calls of GeneratedQuery
+  (()-->(:RanCommand)-->(:RanCypher))* // One or more chains of RanCommand + RanCypher
+RETURN pth
 ORDER BY length(pth) DESC
 LIMIT 10000;`;
     const expected = query.trimStart();
@@ -1430,7 +1433,7 @@ LIMIT 10000;`;
   test('6v', () => {
     const query = `MATCH path =
   (m1:loooooooongrelationtypename {code: "mFG66X9v"})-
-  [r:verylongrelationtypename]->
+    [r:verylongrelationtypename]->
   (m2:anotherverylongrelationtypename)
 RETURN path`;
     const expected = query.trimStart();

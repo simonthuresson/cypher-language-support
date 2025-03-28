@@ -490,10 +490,17 @@ RETURN n`;
 )
 YIELD graphName, nodeCount, relationshipCount, createMillis
 RETURN graphName, nodeCount, relationshipCount, createMillis;`;
-    const expected = `CALL gds.graph.project("qk5jpmGl", // Name of the projected graph
-                       ["TB4Tvv6q", "2iCI1Rll", "kaLEqBxX"], // Node labels to include
-                       {connection: {type: "R3e8WLkh", // Include all relationships
-                                     orientation: "weFW44Gy"}}) // Treat relationships as undirected
+    const expected = `CALL
+  gds.graph.project(
+    "qk5jpmGl", // Name of the projected graph
+    ["TB4Tvv6q", "2iCI1Rll", "kaLEqBxX"], // Node labels to include
+    {
+      connection: {
+        type: "R3e8WLkh", // Include all relationships
+        orientation: "weFW44Gy" // Treat relationships as undirected
+      }
+    }
+  )
 YIELD graphName, nodeCount, relationshipCount, createMillis
 RETURN graphName, nodeCount, relationshipCount, createMillis;`;
     verifyFormatting(query, expected);
