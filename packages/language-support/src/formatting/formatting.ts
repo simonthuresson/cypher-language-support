@@ -164,6 +164,20 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
       let activeGroups: Group[] = [];
       for (let i = 0; i < chunkList.length; i++) {
         const chunk = chunkList[i];
+
+        for (const group of chunk.groupsStarting) {
+          activeGroups.push(group);
+        }
+        for (const group of activeGroups) {
+          group.size += chunk.text.length;
+          if (chunk.type === 'REGULAR' && i !== chunkList.length - 1) {
+            group.size += chunk.noSpace ? 0 : 1;
+          }
+        }
+
+        for (const group of chunk.groupsEnding) {
+          activeGroups = activeGroups.filter((g) => g.id !== group.id);
+        }
         if (activeGroups.length > 0 && chunk.type === 'COMMENT') {
           activeGroups[0].size += 800;
         }
@@ -183,19 +197,6 @@ export class TreePrintVisitor extends CypherCmdParserVisitor<void> {
           for (const group of activeGroups) {
             group.size += 800;
           }
-        }
-        for (const group of chunk.groupsStarting) {
-          activeGroups.push(group);
-        }
-        for (const group of activeGroups) {
-          group.size += chunk.text.length;
-          if (chunk.type === 'REGULAR' && i !== chunkList.length - 1) {
-            group.size += chunk.noSpace ? 0 : 1;
-          }
-        }
-
-        for (const group of chunk.groupsEnding) {
-          activeGroups = activeGroups.filter((g) => g.id !== group.id);
         }
       }
     }
